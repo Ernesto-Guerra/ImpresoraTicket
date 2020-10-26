@@ -53,7 +53,7 @@ class PrintController extends Controller
 
                 if(strlen($product->product->name) > 15){
                     array_push($items,
-                        new fitem($product->quantity.'x '.substr($product->product->name,0,15),'','','')
+                        new fitem($product->quantity.'x '.substr($product->product->name,0,15),'$'.$product->sale_price,$product->discount.'%','$'.$product->subtotal)
                         );
                         $product->product->name = substr($product->product->name,15);
                         $iter = 0;
@@ -64,19 +64,19 @@ class PrintController extends Controller
                         $product->product->name = substr($product->product->name,($iter*17)+17);
                     }
                     array_push($items,
-                        new fitem($product->product->name,'$'.$product->sale_price,'%'.$product->discount,'$'.$product->subtotal)
+                        new fitem($product->product->name,'','','')
                     );
                 }
                 else{
                     array_push($items,
-                        new fitem($product->quantity.'x '.$product->product->name,'$'.$product->sale_price,'%'.$product->discount,'$'.$product->subtotal)
+                        new fitem($product->quantity.'x '.$product->product->name,'$'.$product->sale_price,$product->discount.'%','$'.$product->subtotal)
                     );
                 }
                 
             }
             
             $subtotal = new item('Subtotal', '$'.$sale->cart_subtotal);
-            $percent = new item('Descuento general', '%'.$sale->discount);
+            $percent = new item('Descuento general', $sale->discount.'%');
             $tax = new item('Descuento monetario', '$'.$sale->amount_discount);
             $total = new item('Total', '$'.$sale->cart_total);
             /* Date is kept the same for testing */
@@ -99,8 +99,7 @@ class PrintController extends Controller
             $printer -> text("RUEDA BICENTENARIA SAPI DE CV\n");        
             $printer -> selectPrintMode();
             $printer -> text("Sucursal: ".$sale->branch_office->name."\n");  
-            $printer -> text("Vendedor: ".$sale->user->name."\n");      
-            $printer -> text($tipoPago."\n");            
+            $printer -> text("Vendedor: ".$sale->user->name."\n");                              
             $printer -> feed();
 
             /* Title of receipt */
@@ -131,6 +130,7 @@ class PrintController extends Controller
             }        
             $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
             $printer -> text($total);        
+            $printer -> text($tipoPago."\n");
             $printer -> selectPrintMode();
 
             /* Footer */
