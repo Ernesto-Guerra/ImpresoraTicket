@@ -50,9 +50,29 @@ class PrintController extends Controller
                     new service($product->quantity,$product->product->name)
                 );
                 }          
-                array_push($items,
-                new fitem($product->quantity.'x '.$product->product->name,'$'.$product->sale_price,'%'.$product->discount,'$'.$product->subtotal)
-                );
+
+                if(strlen($product->product->name) > 15){
+                    array_push($items,
+                        new fitem($product->quantity.'x '.substr($product->product->name,0,15),'','','')
+                        );
+                        $product->product->name = substr($product->product->name,15);
+                        $iter = 0;
+                    while (strlen($product->product->name) > 17) {
+                        array_push($items,
+                            new fitem(substr($product->product->name,($iter * 17),($iter*17)+17),'','','')
+                        );
+                        $product->product->name = substr($product->product->name,($iter*17)+17);
+                    }
+                    array_push($items,
+                        new fitem($product->product->name,'$'.$product->sale_price,'%'.$product->discount,'$'.$product->subtotal)
+                    );
+                }
+                else{
+                    array_push($items,
+                        new fitem($product->quantity.'x '.$product->product->name,'$'.$product->sale_price,'%'.$product->discount,'$'.$product->subtotal)
+                    );
+                }
+                
             }
             
             $subtotal = new item('Subtotal', '$'.$sale->cart_subtotal);
@@ -129,8 +149,7 @@ class PrintController extends Controller
                 for($i = 0; $i<$service->quantity;$i++){
                     $printer -> setJustification(Printer::JUSTIFY_CENTER);
                     $printer->text('Folio: '.$sale->folio_branch_office.'      Sucursal: '.$sale->branch_office->name."\n");                            
-                    $printer->text($service->name."\n");                           
-                    $printer->qrCode($service->name);
+                    $printer->text($service->name."\n");                                               
                     $printer->text($date);                
                     $printer->feed();
                     $printer->cut();
@@ -203,10 +222,6 @@ class fitem
         $iter = 0;
         $tempname = $this->name;
 
-        if(strlen($this->name) > 18){
-            $this->name = substr($this->name, $iter, $iter+15) . "...";
-
-        }
         
 
         $name = str_pad($this -> name, $nameCols) ;
