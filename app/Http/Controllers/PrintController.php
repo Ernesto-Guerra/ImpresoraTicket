@@ -147,6 +147,7 @@ class PrintController extends Controller
             /* Cut the receipt and open the cash drawer */
             $printer -> cut();
 
+            // imprime todos los servicios con folio
             foreach($services as $service){
                 for($i = 0; $i<$service->quantity;$i++){
                     $printer -> setJustification(Printer::JUSTIFY_CENTER);
