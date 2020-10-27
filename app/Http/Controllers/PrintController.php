@@ -116,7 +116,9 @@ class PrintController extends Controller
                 $printer -> text($item);
             }
             $printer -> setEmphasis(true);
-            $printer -> text($subtotal);        
+            $printer -> text($subtotal);       
+            $printer -> text(new item('Paga con','$'.$sale->ingress));
+            $printer -> text(new item('Cambio','$'.$sale->turned)); 
             $printer -> setEmphasis(false);
             $printer -> feed();
 
@@ -128,7 +130,7 @@ class PrintController extends Controller
             if($sale->amount_discount != null && $sale->amount_discount != 0 && $sale->amount_discount != "0"){
                 $printer -> text($tax);    
             }        
-            $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+            $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);            
             $printer -> text($total);        
             $printer -> text($tipoPago."\n");
             $printer -> selectPrintMode();
@@ -137,7 +139,7 @@ class PrintController extends Controller
             $printer -> feed(2);
             $printer -> setJustification(Printer::JUSTIFY_CENTER);
             $printer -> text("Gracias por visitar la gran rueda\n");        
-            $printer -> text("Para mas información, visita granrueda.com\n");        
+            $printer -> text("Para mas información, visita elsoldecancun.com\n");        
             $printer -> feed(2);
             $printer -> text($date . "\n");        
             $printer -> setJustification();
